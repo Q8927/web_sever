@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小游戏合集 · 转盘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="glow"></div>
+<canvas id="fx"></canvas>
+<div class="stage">
+  <canvas id="emberCv"></canvas>
+  <aside class="info">
+    <div class="brand">游戏<em>合集</em></div>
+    <h1 id="title">—</h1>
+    <p class="desc" id="desc">—</p>
+    <div class="meta" id="meta">—</div>
+    <div class="hint">滚轮 / 方向键切换<br>点击卡片选中 · 再点一次开始</div>
+  </aside>
+  <div class="wheel" id="wheel"></div>
+</div>
+<div id="gameScreen">
+  <canvas id="gsBg"></canvas>
+  <canvas id="gsParticles"></canvas>
+  <div class="gs-panel">
+    <div class="gs-head">
+      <button id="gsBack" type="button">← 返回</button>
+      <div class="gs-title" id="gsName">—</div>
+    </div>
+    <div class="gs-output" id="gsOutput"></div>
+    <div class="gs-inputbar">
+      <input id="gsInput" autocomplete="off" spellcheck="false" placeholder="输入…">
+      <button id="gsSend" type="button">发送</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

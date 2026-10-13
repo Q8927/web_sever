@@ -1,0 +1,371 @@
+@property --zoom {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+:root{
+  --bg:#eef4fb;
+  --surface:#ffffff;
+  --line:#dbe7f5;
+  --line-on:#7bb8e0;
+  --text:#131a24;
+  --muted:#5f7186;
+  --faint:#9aa9bc;
+  --accent:#00a1d6;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{
+  font-family:"Outfit",-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+.stage{position:relative;z-index:5;width:100%;height:100vh;overflow:hidden}
+
+/* ── 左侧文字：占黄金分割短边 38.2% ── */
+.info{
+  position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:38.2%;
+  padding-left:clamp(48px,6.4vw,132px);
+  padding-right:clamp(28px,4vw,68px);
+  z-index:40;
+}
+.brand{
+  font-size:.92rem;letter-spacing:.38em;color:var(--faint);
+  margin-bottom:clamp(30px,4.6vh,56px);font-weight:500;
+}
+.brand em{font-style:normal;color:var(--accent)}
+.info h1{
+  font-family:"Bricolage Grotesque","Outfit",sans-serif;
+  font-size:clamp(2.5rem,4.6vw,4.3rem);
+  font-weight:800;letter-spacing:-.038em;line-height:1.04;
+  margin:0 0 clamp(22px,3vh,36px);
+  background:linear-gradient(118deg,
+    #131a24 0%,
+    #131a24 8%,
+    color-mix(in srgb, var(--gc, var(--accent)) 82%, #16202c) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  transform:scale(var(--zoom, 1));
+  transform-origin:left center;
+  transition:opacity .32s ease,
+             --zoom .6s cubic-bezier(.22,1,.36,1),
+             filter .32s ease;
+}
+.info .desc{
+  position:relative;
+  font-size:clamp(1.12rem,1.5vw,1.36rem);
+  color:color-mix(in srgb, var(--gc, #5f7186) 62%, #16202c 38%);
+  line-height:1.8;
+  margin:0 0 clamp(30px,4vh,50px);
+  min-height:3.6em;
+  max-width:26ch;
+  transition:opacity .34s ease .05s, transform .46s var(--ease) .05s, filter .34s ease .05s;
+}
+/* 金色条纹扫光层（覆盖在介绍文字上） */
+.info .desc::before{
+  content:attr(data-text);
+  position:absolute;left:0;top:0;width:100%;
+  color:transparent;
+  background-image:linear-gradient(100deg,
+    transparent 0%,
+    transparent 34%,
+    rgba(255,214,128,.30) 43%,
+    rgba(255,238,186,.98) 50%,
+    rgba(255,214,128,.30) 57%,
+    transparent 66%,
+    transparent 100%);
+  background-size:250% 100%;
+  background-position:0% 0;
+  background-repeat:no-repeat;
+  -webkit-background-clip:text;background-clip:text;
+  pointer-events:none;
+  opacity:0;
+}
+.info .desc.gold-sweep::before{
+  animation:goldSweep 1.05s cubic-bezier(.34,.5,.3,1) forwards;
+}
+@keyframes goldSweep{
+  0%{ background-position:0% 0; opacity:1 }
+  99%{ background-position:100% 0; opacity:1 }
+  100%{ background-position:100% 0; opacity:0 }
+}
+.info .meta{
+  font-size:.88rem;color:var(--faint);letter-spacing:.22em;
+  margin-bottom:clamp(40px,5.6vh,68px);font-weight:500;
+  transition:opacity .3s ease .1s, transform .42s var(--ease) .1s, color .4s ease;
+}
+
+/* 切换时的渐变状态 */
+.info.switching h1,
+.info.switching .desc,
+.info.switching .meta{
+  opacity:0;
+  filter:blur(5px);
+}
+.info.switching h1{transform:translateY(14px)}
+.info.switching .desc{transform:translateY(10px)}
+.info.switching .meta{transform:translateY(6px)}
+/* 火焰粒子画布 */
+#emberCv{
+  position:absolute;inset:0;z-index:45;pointer-events:none;
+  display:block;width:100%;height:100%;
+}
+
+/* 标题燃烧：与卡片同机制、同倍率、同时长 */
+.info h1.burning{
+  --zoom: 1.3;
+  filter:brightness(1.18) saturate(1.15);
+}
+
+.info .hint{
+  font-size:.88rem;color:#c2cdda;line-height:2.3;
+  letter-spacing:.05em;
+}
+
+/* ── 右侧圆环：占长边 61.8% ── */
+.wheel{position:absolute;inset:0}
+
+.card{
+  position:absolute;left:0;top:0;
+  transform-origin:0 0;
+  width:clamp(272px,27.5vw,356px);
+  padding:27px 34px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:18px;
+  cursor:pointer;
+  transition:--zoom .6s cubic-bezier(.22,1,.36,1),
+             transform .78s var(--ease),
+             filter .78s ease,
+             opacity .78s ease,
+             border-color .35s,
+             box-shadow .45s;
+  will-change:transform,filter,opacity;
+  user-select:none;
+  backface-visibility:hidden;
+  overflow:hidden;
+}
+/* 对角多彩渐变层（悬停显现） */
+.card .diag{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(135deg,
+    rgba(0,161,214,.15) 0%,
+    rgba(18,208,196,.11) 30%,
+    rgba(123,92,255,.10) 58%,
+    rgba(251,114,153,.12) 82%,
+    rgba(255,143,107,.10) 100%);
+  opacity:0;transition:opacity .5s var(--ease);
+}
+/* 鼠标跟随高光 */
+.card .spot{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),
+    rgba(0,161,214,.20), rgba(18,208,196,.08) 42%, transparent 68%);
+  opacity:0;transition:opacity .5s var(--ease);
+}
+.card:hover .diag,.card.on .diag{opacity:1}
+.card:hover .spot,.card.on .spot{opacity:1}
+
+/* 字符 */
+.card .n .ch{display:inline-block;will-change:transform,opacity,filter}
+.card .n,.card .t{position:relative;z-index:2}
+
+/* ── 镜面高光条（一粗一细，紧挨） ── */
+.card .shine{
+  position:absolute;inset:0;z-index:5;pointer-events:none;
+  overflow:hidden;opacity:0;border-radius:inherit;
+}
+.card .shine .grp{
+  position:absolute;top:-45%;height:190%;
+  display:flex;gap:8px;align-items:stretch;
+  transform:skewX(-20deg);
+}
+.card .shine i{
+  display:block;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.92),transparent);
+}
+.card .shine .b1{width:64px}
+.card .shine .b2{width:18px;opacity:.7;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)}
+
+/* ── 游戏界面（淡青绿主色 + 流动粒子 + 藏色） ── */
+#gameScreen{
+  --gs-bg:#e4f4f0;
+  --gs-bg2:#d3ece7;
+  --gs-panel:#f4fbf9;
+  --gs-line:#b9ded6;
+  --gs-text:#1b3a35;
+  --gs-muted:#5c7d76;
+  --gs-faint:#8fada6;
+  --gs-accent:#12a894;
+  --gs-accent-hi:#0e8f7e;
+  --hide-blue:#3d6fd6;
+  --hide-rose:#e8467c;
+  --hide-amber:#ffb84d;
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .9s ease;
+  /* 藏色：角落极淡的蓝与瑰红光晕 */
+  background:
+    radial-gradient(70% 60% at 4% -6%, rgba(61,111,214,.055), transparent 62%),
+    radial-gradient(60% 55% at 102% 8%, rgba(232,70,124,.05), transparent 58%),
+    radial-gradient(80% 70% at 50% 116%, rgba(255,184,77,.06), transparent 64%),
+    linear-gradient(160deg, var(--gs-bg), var(--gs-bg2));
+}
+#gameScreen.on{opacity:1;pointer-events:auto}
+
+/* 背景流动渐变画布 */
+#gsBg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  display:block;width:100%;height:100%;
+}
+/* 粒子画布 */
+#gsParticles{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  display:block;width:100%;height:100%;
+}
+
+#gameScreen .gs-panel{
+  position:relative;z-index:2;
+  width:min(94vw,900px);
+  height:min(88vh,760px);
+  display:flex;flex-direction:column;
+  background:var(--gs-panel);
+  border:1px solid var(--gs-line);
+  border-radius:16px;
+  overflow:hidden;
+  opacity:0;transform:translateY(22px) scale(.985);
+  transition:opacity .7s ease .32s, transform .85s cubic-bezier(.22,1,.36,1) .32s;
+  box-shadow:0 40px 90px -50px rgba(20,80,70,.45),0 0 60px -30px rgba(18,168,148,.3);
+}
+#gameScreen.on .gs-panel{opacity:1;transform:none}
+
+.gs-head{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 22px;
+  border-bottom:1px solid var(--gs-line);
+  flex-shrink:0;
+}
+#gsBack{
+  font-family:inherit;font-size:.86rem;
+  padding:7px 16px;border-radius:9px;cursor:pointer;
+  background:#e8f4f1;color:var(--gs-muted);
+  border:1px solid var(--gs-line);
+  transition:background .25s,color .25s,border-color .25s;
+}
+#gsBack:hover{background:#d5ebe6;color:var(--gs-accent-hi);border-color:#8fc9bd}
+.gs-title{
+  font-family:"Bricolage Grotesque","Outfit",sans-serif;
+  font-size:1.12rem;font-weight:800;letter-spacing:-.02em;
+  color:var(--gs-text);
+}
+.gs-output{
+  flex:1;overflow-y:auto;
+  padding:22px 26px;
+  font-family:Consolas,"Courier New","Microsoft YaHei",monospace;
+  font-size:.92rem;line-height:1.72;color:#284b45;
+  white-space:pre-wrap;word-break:break-word;
+}
+.gs-output div{white-space:pre-wrap}
+.gs-output::-webkit-scrollbar{width:9px}
+.gs-output::-webkit-scrollbar-track{background:transparent}
+.gs-output::-webkit-scrollbar-thumb{background:#aed8d0;border-radius:99px}
+.gs-output::-webkit-scrollbar-thumb:hover{background:#8fc9bd}
+.gs-inputbar{
+  display:flex;gap:10px;padding:16px 22px;
+  border-top:1px solid var(--gs-line);flex-shrink:0;
+}
+#gsInput{
+  flex:1;padding:11px 15px;
+  font-family:inherit;font-size:.95rem;
+  background:#eaf6f3;color:var(--gs-text);
+  border:1px solid var(--gs-line);border-radius:10px;outline:none;
+  transition:border-color .25s,box-shadow .25s;
+}
+#gsInput:focus{border-color:var(--gs-accent);box-shadow:0 0 0 3px rgba(18,168,148,.14)}
+#gsInput:disabled{opacity:.45}
+#gsSend{
+  padding:11px 26px;font-family:inherit;font-size:.95rem;
+  background:var(--gs-accent);color:#ffffff;font-weight:600;
+  border:none;border-radius:10px;cursor:pointer;
+  transition:background .25s,opacity .25s,box-shadow .25s;
+}
+#gsSend:hover{background:var(--gs-accent-hi);box-shadow:0 6px 18px -8px rgba(18,168,148,.7)}
+#gsSend:disabled{opacity:.4;cursor:default}
+.card .n{
+  font-family:"Bricolage Grotesque","Outfit",sans-serif;
+  font-size:clamp(1.66rem,2.5vw,2.08rem);
+  font-weight:800;letter-spacing:-.02em;
+  white-space:nowrap;
+}
+.card .t{
+  font-size:.88rem;letter-spacing:.22em;color:var(--faint);
+  margin-top:10px;font-weight:500;
+}
+.card.on{
+  border-color:var(--line-on);
+  box-shadow:0 34px 64px -34px rgba(0,110,160,.62);
+}
+.no-anim .card{transition:none!important}
+
+/* ── 星点流光背景 ── */
+#stars{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  display:block;width:100%;height:100%;
+}
+
+/* ── 鼠标跟随光晕 ── */
+#glow{
+  position:fixed;left:0;top:0;width:600px;height:600px;z-index:1;
+  margin:-300px 0 0 -300px;pointer-events:none;
+  background:radial-gradient(circle closest-side,
+    rgba(0,161,214,.15),
+    rgba(18,208,196,.06) 38%,
+    rgba(251,114,153,.05) 58%,
+    transparent 74%);
+  opacity:0;transition:opacity .5s var(--ease);
+  will-change:transform;
+}
+body.pointer-on #glow{opacity:1}
+
+/* ── 水波特效画布 ── */
+#fx{
+  position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:block;width:100%;height:100%;
+}
+
+#toast{
+  position:fixed;left:50%;bottom:44px;z-index:70;
+  transform:translate(-50%,12px);
+  padding:12px 26px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);
+  font-size:.92rem;color:var(--text);
+  box-shadow:0 18px 40px -24px rgba(0,110,160,.6);
+  opacity:0;pointer-events:none;
+  transition:opacity .35s,transform .5s var(--ease);
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:880px){
+  .info{
+    width:100%;left:0;top:auto;bottom:0;
+    transform:none;
+    padding:24px 28px 34px;
+    background:linear-gradient(to top, var(--bg) 62%, transparent);
+  }
+  .info .hint{display:none}
+  .info h1{font-size:2.1rem}
+  .info .desc{font-size:.94rem;min-height:0;margin-bottom:16px;max-width:30ch}
+  .info .meta{margin-bottom:0}
+  .card{width:clamp(170px,44vw,220px);padding:18px 22px}
+  .card .n{font-size:1.1rem}
+  .card .t{font-size:.6rem;margin-top:5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .card{transition:none!important}
+}
